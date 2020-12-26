@@ -129,7 +129,8 @@ class DBase {
 		fseek($fd, 32, SEEK_SET);
 		for($i = 0; $i < $this->fieldCount; $i++) {
 			$data  = fread($this->fd, 32);
-			$field = array_map('trim', unpack('a11name/a1type/c4/c1length/c1precision/s1workid/c1example/c10/c1production', $data));
+			// unsigned length and precision
+			$field = array_map('trim', unpack('a11name/a1type/c4/C1length/C1precision/s1workid/c1example/c10/c1production', $data));
 			$this->fields[] = $field;
 		}
 	}
