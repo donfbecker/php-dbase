@@ -41,7 +41,7 @@ class DBase {
 		// indicates the presence of a dBASE for DOS memo file, bits 4-6 indicate the
 		// presence of a SQL table, bit 7 indicates the presence of any memo file
 		// (either dBASE m PLUS or dBASE for DOS)
-		self::putChar8($fd, 5);
+		self::putChar8($fd, 3);
 
 		// Byte 1-3 (3 bytes): Date of last update; formatted as YYMMDD
 		self::putChar8($fd, date('Y')-1900);
@@ -87,7 +87,7 @@ class DBase {
 
 		// Byte 32 - n (32 bytes each): Field descriptor array
 		foreach($fields as &$field) {
-			self::putString($fd, $field[0], 11);       // Byte 0 - 10 (11 bytes): Field name in ASCII (zero-filled)
+			self::putStringNull($fd, $field[0], 11);   // Byte 0 - 10 (11 bytes): Field name in ASCII (zero-filled)
 			self::putString($fd, $field[1],  1);       // Byte 11 (1 byte): Field type in ASCII (C, D, F, L, M, or N)
 			self::putInt32($fd, 0);                    // Byte 12 - 15 (4 bytes): Reserved
 			self::putChar8($fd, self::length($field)); // Byte 16 (1 byte): Field length in binary. The maximum length of a field is 254 (0xFE).
@@ -324,6 +324,10 @@ class DBase {
 
 	private static function putString($fd, $value, $length=254) {
 		$ret = fwrite($fd, pack('A'.$length, $value));
+	}
+
+	private static function putStringNull($fd, $value, $length=254) {
+		$ret = fwrite($fd, pack('a'.$length, $value));
 	}
 
 	private function putRecord($record) {
